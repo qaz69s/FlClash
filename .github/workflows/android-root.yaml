@@ -1,38 +1,93 @@
 name: android-root
 
 on:
+  schedule:
+    # 01:00 UTC = 09:00 Beijing, every day
+    - cron: '0 1 * * *'
   workflow_dispatch:
+    inputs:
+      mihomo_tag:
+        description: 'mihomo tag to merge (empty = latest stable release)'
+        required: false
+        default: ''
+      force:
+        description: 'Build even if a release for this tag exists'
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
 
 env:
   FLUTTER_VERSION: '3.47.6'
   GO_VERSION: '1.27.1'
   NDK_VERSION: r28c
+  MIHOMO_REPO: https://github.com/MetaCubeX/mihomo.git
 
 jobs:
-  apk:
+  check:
     runs-on: ubuntu-latest
+    outputs:
+      tag: ${{ steps.check.outputs.tag }}
+      build: ${{ steps.check.outputs.build }}
+    steps:
+      - id: check
+        env:
+          GH_TOKEN: ${{ github.token }}
+          INPUT_TAG: ${{ inputs.mihomo_tag }}
+          FORCE: ${{ inputs.force }}
+        run: |
+          TAG="$INPUT_TAG"
+          if [ -z "$TAG" ]; then
+            TAG=$(gh api repos/MetaCubeX/mihomo/releases/latest --jq .tag_name)
+          fi
+          echo "mihomo tag: $TAG"
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+          if [ "$FORCE" != "true" ] && gh release view "root-$TAG" -R "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            echo "Release root-$TAG already exists, nothing to do."
+            echo "build=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "build=true" >> "$GITHUB_OUTPUT"
+          fi
+
+  apk:
+    needs: check
+    if: needs.check.outputs.build == 'true'
+    runs-on: ubuntu-latest
+    env:
+      TAG: ${{ needs.check.outputs.tag }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
         with:
           submodules: recursive
 
-      - name: Setup Android signing
-        env:
-          KEYSTORE: ${{ secrets.KEYSTORE }}
-        if: env.KEYSTORE != ''
-        run: |
-          echo "$KEYSTORE" | base64 --decode > android/app/keystore.jks
-          {
-            echo "keyAlias=${{ secrets.KEY_ALIAS }}"
-            echo "storePassword=${{ secrets.STORE_PASSWORD }}"
-            echo "keyPassword=${{ secrets.KEY_PASSWORD }}"
-          } >> android/local.properties
-
       - uses: actions/setup-go@v5
         with:
           go-version: ${{ env.GO_VERSION }}
           cache-dependency-path: core/go.sum
+
+      - name: Merge mihomo ${{ env.TAG }} into core
+        working-directory: core/Clash.Meta
+        run: |
+          git config user.name github-actions
+          git config user.email github-actions@users.noreply.github.com
+          git remote set-url origin https://github.com/chen08209/Clash.Meta.git
+          git fetch --unshallow --filter=blob:none origin || git fetch --filter=blob:none origin
+          git fetch --filter=blob:none "$MIHOMO_REPO" "refs/tags/$TAG:refs/tags/$TAG"
+          git merge --no-edit "$TAG"
+          git log --oneline -3
+          cd .. && go mod tidy
+
+      - name: Setup Android signing
+        run: |
+          cp android/signing/flclash-root.p12 android/app/keystore.jks
+          {
+            echo "keyAlias=flclash"
+            echo "storePassword=flclashroot"
+            echo "keyPassword=flclashroot"
+            echo "appIdSuffix=.dev"
+          } >> android/local.properties
 
       - uses: actions/setup-java@v4
         with:
@@ -61,7 +116,21 @@ jobs:
           ANDROID_NDK_HOME: ${{ steps.ndk.outputs.ndk-path }}
         run: dart setup.dart android --arch arm64 --env stable -v
 
+      - name: Publish release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          ls -la dist
+          mkdir out
+          for f in $(find dist -name '*.apk'); do cp "$f" "out/FlClash-root-mihomo-$TAG-arm64.apk"; done
+          gh release delete "root-$TAG" -y --cleanup-tag 2>/dev/null || true
+          gh release create "root-$TAG" out/*.apk \
+            --target "$GITHUB_SHA" \
+            --title "FlClash root · mihomo $TAG" \
+            --notes "FlClash root-mode build with mihomo $TAG merged into the core. Auto-built by android-root workflow."
+
       - uses: actions/upload-artifact@v4
+        if: always()
         with:
           name: FlClash-android-root
           path: ./dist

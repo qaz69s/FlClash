@@ -68,6 +68,7 @@ android {
             isShrinkResources = true
             if (hasReleaseSigning) {
                 signingConfig = signingConfigs.getByName("release")
+                localProperties.getProperty("appIdSuffix")?.let { applicationIdSuffix = it }
             } else {
                 signingConfig = signingConfigs.getByName("debug")
                 applicationIdSuffix = ".dev"
