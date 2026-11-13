@@ -325,6 +325,9 @@ internal class ServiceStateMachine(private val host: ServiceStateHost) {
     }
 
     private suspend fun prepareVpn(options: VpnOptions): Boolean {
+        if (options.enable && options.root) {
+            return true
+        }
         val app = host.app()
             ?: return !options.enable || host.isVpnPermissionGranted()
         return suspendCancellableCoroutine { continuation ->

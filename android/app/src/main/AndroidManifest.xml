@@ -26,6 +26,7 @@
     <uses-permission android:name="com.android.permission.GET_INSTALLED_APPS" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
     <uses-permission android:name="android.permission.ACCESS_LOCAL_NETWORK" />
     <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
@@ -118,6 +119,26 @@
                 <action android:name="${applicationId}.intent.action.VPN_REVOKED" />
             </intent-filter>
         </receiver>
+
+        <receiver
+            android:name=".BootReceiver"
+            android:exported="true"
+            android:permission="${applicationId}.permission.RECEIVE_BROADCASTS">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.QUICKBOOT_POWERON" />
+                <action android:name="${applicationId}.intent.action.ROOT_BOOT" />
+            </intent-filter>
+        </receiver>
+
+        <service
+            android:name=".RootWifiWatch"
+            android:exported="false"
+            android:foregroundServiceType="specialUse">
+            <property
+                android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
+                android:value="Starts or stops the proxy when the device joins or leaves a Wi-Fi network the user excluded" />
+        </service>
 
         <meta-data
             android:name="flutterEmbedding"

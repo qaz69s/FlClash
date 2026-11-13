@@ -334,6 +334,7 @@ _VpnOptions _$VpnOptionsFromJson(Map<String, dynamic> json) => _VpnOptions(
       const [],
   mtu: (json['mtu'] as num?)?.toInt() ?? 0,
   congestionController: json['congestionController'] as String? ?? '',
+  root: json['root'] as bool? ?? false,
 );
 
 Map<String, dynamic> _$VpnOptionsToJson(_VpnOptions instance) =>
@@ -350,6 +351,7 @@ Map<String, dynamic> _$VpnOptionsToJson(_VpnOptions instance) =>
       'routeAddress': instance.routeAddress,
       'mtu': instance.mtu,
       'congestionController': instance.congestionController,
+      'root': instance.root,
     };
 
 _InitParams _$InitParamsFromJson(Map<String, dynamic> json) => _InitParams(

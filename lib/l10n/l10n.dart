@@ -7663,8 +7663,7 @@ class AppLocalizations {
   String customImportDroppedSubRules(num count, Object label) {
     return Intl.plural(
       count,
-      one:
-          '1 SUB-RULE rule was dropped, since custom profiles do not support sub-rules',
+      one: '1 SUB-RULE rule was dropped, since custom profiles do not support sub-rules',
       other:
           '$label SUB-RULE rules were dropped, since custom profiles do not support sub-rules',
       name: 'customImportDroppedSubRules',
@@ -9068,6 +9067,46 @@ class AppLocalizations {
     return Intl.message(
       'These domains are resolved by Fallback directly.',
       name: 'fallbackFilterDomainDesc',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Root mode`
+  String get rootMode {
+    return Intl.message('Root mode', name: 'rootMode', desc: '', args: []);
+  }
+
+  /// `Root mode routes traffic into the TUN with root instead of the system VPN: no VPN key icon, no VPN slot taken, and other VPN apps keep working. The system proxy and allow-bypass options do not apply, and per-app process rules may not match.`
+  String get rootModeDesc {
+    return Intl.message(
+      'Root mode routes traffic into the TUN with root instead of the system VPN: no VPN key icon, no VPN slot taken, and other VPN apps keep working. The system proxy and allow-bypass options do not apply, and per-app process rules may not match.',
+      name: 'rootModeDesc',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Start on boot`
+  String get bootStart {
+    return Intl.message('Start on boot', name: 'bootStart', desc: '', args: []);
+  }
+
+  /// `Start the proxy after the phone boots. With root mode on, a boot script also wakes FlClash on systems that block auto-start.`
+  String get bootStartDesc {
+    return Intl.message(
+      'Start the proxy after the phone boots. With root mode on, a boot script also wakes FlClash on systems that block auto-start.',
+      name: 'bootStartDesc',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Root mode is on: the Wi-Fi name is read through root, so no location permission is needed. The service stops on an excluded network and starts again when you leave it, even with FlClash closed.`
+  String get rootWifiDesc {
+    return Intl.message(
+      'Root mode is on: the Wi-Fi name is read through root, so no location permission is needed. The service stops on an excluded network and starts again when you leave it, even with FlClash closed.',
+      name: 'rootWifiDesc',
       desc: '',
       args: [],
     );

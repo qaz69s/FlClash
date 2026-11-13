@@ -89,6 +89,19 @@ class TUNItem extends ConsumerWidget {
   }
 }
 
+class RootModeItem extends ConsumerWidget {
+  const RootModeItem({super.key});
+
+  @override
+  Widget build(BuildContext context, ref) {
+    return _vpnToggle(
+      title: (l) => l.rootMode,
+      select: (state) => state.root,
+      update: (state, value) => state.copyWith(root: value),
+    );
+  }
+}
+
 class AllowBypassItem extends ConsumerWidget {
   const AllowBypassItem({super.key});
 
@@ -486,6 +499,7 @@ class VpnSections extends ConsumerWidget {
         generateSection(
           title: 'VPN',
           items: const [
+            RootModeItem(),
             VpnSystemProxyItem(),
             BypassDomainItem(),
             AllowBypassItem(),
@@ -493,6 +507,7 @@ class VpnSections extends ConsumerWidget {
             DNSHijackingItem(),
           ],
           footer: [
+            appLocalizations.rootModeDesc,
             if (authenticationEnable)
               appLocalizations.authenticationSystemProxyDesc,
             appLocalizations.bypassDomainDesc,

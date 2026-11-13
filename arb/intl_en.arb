@@ -1076,5 +1076,10 @@
   "fakeipFilterDesc": "These domains get real IPs instead of Fake-IPs. In whitelist mode, only they get Fake-IPs.",
   "fallbackFilterGeositeDesc": "Domains in these GeoSite categories are resolved by Fallback directly.",
   "fallbackFilterIpcidrDesc": "When Nameserver returns an IP in these ranges, the Fallback answer is used.",
-  "fallbackFilterDomainDesc": "These domains are resolved by Fallback directly."
+  "fallbackFilterDomainDesc": "These domains are resolved by Fallback directly.",
+  "rootMode": "Root mode",
+  "rootModeDesc": "Root mode routes traffic into the TUN with root instead of the system VPN: no VPN key icon, no VPN slot taken, and other VPN apps keep working. The system proxy and allow-bypass options do not apply, and per-app process rules may not match.",
+  "bootStart": "Start on boot",
+  "bootStartDesc": "Start the proxy after the phone boots. With root mode on, a boot script also wakes FlClash on systems that block auto-start.",
+  "rootWifiDesc": "Root mode is on: the Wi-Fi name is read through root, so no location permission is needed. The service stops on an excluded network and starts again when you leave it, even with FlClash closed."
 }

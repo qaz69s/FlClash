@@ -27,6 +27,7 @@ _AppSettingProps _$AppSettingPropsFromJson(
   autoLaunch: json['autoLaunch'] as bool? ?? false,
   silentLaunch: json['silentLaunch'] as bool? ?? false,
   autoRun: json['autoRun'] as bool? ?? false,
+  bootStart: json['bootStart'] as bool? ?? false,
   openLogs: json['openLogs'] as bool? ?? false,
   closeConnections: json['closeConnections'] as bool? ?? true,
   requestFeed:
@@ -108,6 +109,7 @@ Map<String, dynamic> _$AppSettingPropsToJson(_AppSettingProps instance) =>
       'autoLaunch': instance.autoLaunch,
       'silentLaunch': instance.silentLaunch,
       'autoRun': instance.autoRun,
+      'bootStart': instance.bootStart,
       'openLogs': instance.openLogs,
       'closeConnections': instance.closeConnections,
       'requestFeed': _$RequestFeedEnumMap[instance.requestFeed]!,
@@ -243,6 +245,7 @@ _VpnProps _$VpnPropsFromJson(Map<String, dynamic> json) => _VpnProps(
       : AccessControlProps.fromJson(
           json['accessControlProps'] as Map<String, dynamic>,
         ),
+  root: json['root'] as bool? ?? false,
 );
 
 Map<String, dynamic> _$VpnPropsToJson(_VpnProps instance) => <String, dynamic>{
@@ -252,6 +255,7 @@ Map<String, dynamic> _$VpnPropsToJson(_VpnProps instance) => <String, dynamic>{
   'allowBypass': instance.allowBypass,
   'dnsHijacking': instance.dnsHijacking,
   'accessControlProps': instance.accessControlProps,
+  'root': instance.root,
 };
 
 _AuthenticationProps _$AuthenticationPropsFromJson(Map<String, dynamic> json) =>

@@ -419,6 +419,10 @@ class MessageLookup extends MessageLookupByLibrary {
     "blacklistMode": MessageLookupByLibrary.simpleMessage("Blacklist mode"),
     "blockQuic": MessageLookupByLibrary.simpleMessage("Block QUIC"),
     "bodyRewrite": MessageLookupByLibrary.simpleMessage("Body rewrite"),
+    "bootStart": MessageLookupByLibrary.simpleMessage("Start on boot"),
+    "bootStartDesc": MessageLookupByLibrary.simpleMessage(
+      "Start the proxy after the phone boots. With root mode on, a boot script also wakes FlClash on systems that block auto-start.",
+    ),
     "brightness": MessageLookupByLibrary.simpleMessage("Brightness"),
     "bypassDomain": MessageLookupByLibrary.simpleMessage("Bypass domains"),
     "bypassDomainDesc": MessageLookupByLibrary.simpleMessage(
@@ -1048,9 +1052,10 @@ class MessageLookup extends MessageLookupByLibrary {
     "installCertificateSuccess": MessageLookupByLibrary.simpleMessage(
       "Certificate installed",
     ),
-    "installedAppsPermissionDeniedMessage": MessageLookupByLibrary.simpleMessage(
-      "The app list permission was denied, so installed apps cannot be listed. Please grant it manually in system settings.",
-    ),
+    "installedAppsPermissionDeniedMessage":
+        MessageLookupByLibrary.simpleMessage(
+          "The app list permission was denied, so installed apps cannot be listed. Please grant it manually in system settings.",
+        ),
     "installedAppsPermissionDesc": MessageLookupByLibrary.simpleMessage(
       "This system hides the installed app list until the permission is granted. Authorize it to configure the per-app proxy.",
     ),
@@ -1696,6 +1701,13 @@ class MessageLookup extends MessageLookupByLibrary {
     "result": MessageLookupByLibrary.simpleMessage("Result"),
     "retry": MessageLookupByLibrary.simpleMessage("Retry"),
     "root": MessageLookupByLibrary.simpleMessage("Root"),
+    "rootMode": MessageLookupByLibrary.simpleMessage("Root mode"),
+    "rootModeDesc": MessageLookupByLibrary.simpleMessage(
+      "Root mode routes traffic into the TUN with root instead of the system VPN: no VPN key icon, no VPN slot taken, and other VPN apps keep working. The system proxy and allow-bypass options do not apply, and per-app process rules may not match.",
+    ),
+    "rootWifiDesc": MessageLookupByLibrary.simpleMessage(
+      "Root mode is on: the Wi-Fi name is read through root, so no location permission is needed. The service stops on an excluded network and starts again when you leave it, even with FlClash closed.",
+    ),
     "routeAddress": MessageLookupByLibrary.simpleMessage("Route addresses"),
     "routeExcludeAddress": MessageLookupByLibrary.simpleMessage(
       "Route exclude addresses",

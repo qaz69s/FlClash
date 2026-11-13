@@ -246,6 +246,7 @@ abstract class AppSettingProps with _$AppSettingProps {
     @Default(false) bool autoLaunch,
     @Default(false) bool silentLaunch,
     @Default(false) bool autoRun,
+    @Default(false) bool bootStart,
     @Default(false) bool openLogs,
     @Default(true) bool closeConnections,
     @Default(RequestFeed.live) RequestFeed requestFeed,
@@ -356,6 +357,7 @@ abstract class VpnProps with _$VpnProps {
     @Default(true) bool allowBypass,
     @Default(false) bool dnsHijacking,
     @Default(defaultAccessControlProps) AccessControlProps accessControlProps,
+    @Default(false) bool root,
   }) = _VpnProps;
 
   factory VpnProps.fromJson(Map<String, Object?>? json) =>

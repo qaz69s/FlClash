@@ -34,7 +34,14 @@ class _OnDemandViewState extends ConsumerState<OnDemandView>
 
   bool get _isWindows => widget.isWindows ?? system.isWindows;
 
-  bool get _needsLocationPermission => _isAndroid || _isMacOS || _isWindows;
+  bool get _rootMode =>
+      _isAndroid &&
+      ref.watch(
+        vpnSettingProvider.select((state) => state.enable && state.root),
+      );
+
+  bool get _needsLocationPermission =>
+      (_isAndroid && !_rootMode) || _isMacOS || _isWindows;
 
   void _handlePermanentlyDeniedLocationPermission() {
     if (_isMacOS) {
@@ -395,7 +402,12 @@ class _OnDemandViewState extends ConsumerState<OnDemandView>
             ).copyWith(bottom: 16 + context.bottomInset),
             sliver: SliverToBoxAdapter(
               child: ListFooter(
-                text: context.appLocalizations.excludeSsidsDesc,
+                text: _rootMode
+                    ? [
+                        context.appLocalizations.excludeSsidsDesc,
+                        context.appLocalizations.rootWifiDesc,
+                      ].join('\n')
+                    : context.appLocalizations.excludeSsidsDesc,
               ),
             ),
           ),

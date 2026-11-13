@@ -171,6 +171,8 @@ abstract class SharedState with _$SharedState {
     required String stopText,
     required bool onlyStatisticsProxy,
     @Default(true) bool showStopAction,
+    @Default([]) List<String> excludeSSIDs,
+    @Default(false) bool bootStart,
   }) = _SharedState;
 
   factory SharedState.fromJson(Map<String, Object?> json) =>

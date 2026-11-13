@@ -42,7 +42,7 @@ final class LocationPermissionsProvider
 }
 
 String _$locationPermissionsHash() =>
-    r'e6e5d8a46af321983b65e81759facb07eee5f94c';
+    r'e8f34788dfd4f96413e3be14cbfc284d29bbd891';
 
 abstract class _$LocationPermissions extends $Notifier<WifiSsidPermission> {
   WifiSsidPermission build();

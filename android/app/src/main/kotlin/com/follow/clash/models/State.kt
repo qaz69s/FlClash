@@ -15,4 +15,7 @@ data class SharedState(
     val vpnOptions: VpnOptions? = null,
     // The Core's own setup params, handed on as Flutter wrote them.
     val setupParams: JsonObject? = null,
+    // Gson skips Kotlin defaults, so these read as null from an older Flutter.
+    val excludeSSIDs: List<String>? = null,
+    val bootStart: Boolean = false,
 )

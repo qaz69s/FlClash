@@ -29,6 +29,7 @@ class VpnService : SystemVpnService(), ManagedService {
     private val binder = LocalBinder()
     private val tunLock = Any()
     private var tunRunning = false
+    private var rootTun = false
 
     override fun onDestroy() {
         try {
@@ -51,7 +52,10 @@ class VpnService : SystemVpnService(), ManagedService {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
             return -1
         }
-        return connectivity?.getConnectionOwnerUid(protocol, source, target) ?: -1
+        // Only the active VpnService owner may ask; in root mode there is none.
+        return runCatching {
+            connectivity?.getConnectionOwnerUid(protocol, source, target)
+        }.getOrNull() ?: -1
     }
 
     private fun resolvePackage(uid: Int): String {
@@ -123,7 +127,42 @@ class VpnService : SystemVpnService(), ManagedService {
     }
 
     private fun handleStart(options: VpnOptions) {
-        val fd = with(Builder()) {
+        val fd = if (options.root) {
+            RootTun.open(this, options, IPV4_ADDRESS, IPV6_ADDRESS)
+        } else {
+            establishTun(options)
+        }
+        synchronized(tunLock) {
+            tunRunning = true
+            rootTun = options.root
+            try {
+                // A Core that fails to take the descriptor leaves the system
+                // routes pointing at an interface nothing reads, and it no
+                // longer keeps its own sockets out of them: every connection
+                // then hangs until it times out. Tear the VPN down instead of
+                // reporting a start that only looks successful.
+                check(
+                    Core.startTun(
+                        fd = fd,
+                        protect = { socket -> options.root || protect(socket) },
+                        resolveUid = this::resolveUid,
+                        resolvePackage = this::resolvePackage,
+                        stack = options.stack,
+                        address = options.tunAddress,
+                        // Root mode sets no system DNS: only hijacking brings queries to the Core.
+                        dns = if (options.root) NET_ANY else options.tunDns,
+                        options = options.tunOptions,
+                    ),
+                ) { "Core rejected the tun file descriptor" }
+            } catch (error: Exception) {
+                stopTunLocked()
+                throw error
+            }
+        }
+    }
+
+    private fun establishTun(options: VpnOptions): Int {
+        return with(Builder()) {
             addAddressAndRoutes(options)
             addDnsServers(options)
             setMtu(options.tunMtu)
@@ -148,31 +187,6 @@ class VpnService : SystemVpnService(), ManagedService {
             }
             establish()?.detachFd()
                 ?: error("VPN establishment was rejected by the system")
-        }
-        synchronized(tunLock) {
-            tunRunning = true
-            try {
-                // A Core that fails to take the descriptor leaves the system
-                // routes pointing at an interface nothing reads, and it no
-                // longer keeps its own sockets out of them: every connection
-                // then hangs until it times out. Tear the VPN down instead of
-                // reporting a start that only looks successful.
-                check(
-                    Core.startTun(
-                        fd = fd,
-                        protect = this::protect,
-                        resolveUid = this::resolveUid,
-                        resolvePackage = this::resolvePackage,
-                        stack = options.stack,
-                        address = options.tunAddress,
-                        dns = options.tunDns,
-                        options = options.tunOptions,
-                    ),
-                ) { "Core rejected the tun file descriptor" }
-            } catch (error: Exception) {
-                stopTunLocked()
-                throw error
-            }
         }
     }
 
@@ -287,8 +301,15 @@ class VpnService : SystemVpnService(), ManagedService {
 
     private fun stopTunLocked() {
         if (tunRunning) {
-            Core.stopTun()
-            tunRunning = false
+            try {
+                Core.stopTun()
+            } finally {
+                tunRunning = false
+                if (rootTun) {
+                    rootTun = false
+                    RootTun.cleanup()
+                }
+            }
         }
     }
 

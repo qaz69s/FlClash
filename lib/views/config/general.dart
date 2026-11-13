@@ -260,6 +260,12 @@ class GeneralView extends ConsumerWidget {
         select: (state) => state.autoRun,
         update: (state, value) => state.copyWith(autoRun: value),
       ),
+      if (system.isAndroid)
+        _appSettingToggle(
+          title: (l) => l.bootStart,
+          select: (state) => state.bootStart,
+          update: (state, value) => state.copyWith(bootStart: value),
+        ),
       ListItem.open(
         title: Text(appLocalizations.onDemand),
         widget: const OnDemandView(),
@@ -405,7 +411,10 @@ class GeneralView extends ConsumerWidget {
           generateSection(
             title: appLocalizations.startupAndBackground,
             items: _startupItems(appLocalizations),
-            footer: appLocalizations.autoRunDesc,
+            footer: [
+              appLocalizations.autoRunDesc,
+              if (system.isAndroid) appLocalizations.bootStartDesc,
+            ].join('\n'),
           ),
           generateSection(
             title: appLocalizations.requestsAndUpdates,

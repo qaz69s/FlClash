@@ -346,6 +346,10 @@ class MessageLookup extends MessageLookupByLibrary {
     "blacklistMode": MessageLookupByLibrary.simpleMessage("黑名单模式"),
     "blockQuic": MessageLookupByLibrary.simpleMessage("阻止 QUIC"),
     "bodyRewrite": MessageLookupByLibrary.simpleMessage("Body 重写"),
+    "bootStart": MessageLookupByLibrary.simpleMessage("开机自启"),
+    "bootStartDesc": MessageLookupByLibrary.simpleMessage(
+      "手机开机后自动启动代理。开启 Root 模式时，还会写入开机脚本，在拦截自启动的系统上也能唤起 FlClash。",
+    ),
     "brightness": MessageLookupByLibrary.simpleMessage("亮度"),
     "bypassDomain": MessageLookupByLibrary.simpleMessage("排除域名"),
     "bypassDomainDesc": MessageLookupByLibrary.simpleMessage(
@@ -1316,6 +1320,13 @@ class MessageLookup extends MessageLookupByLibrary {
     "result": MessageLookupByLibrary.simpleMessage("结果"),
     "retry": MessageLookupByLibrary.simpleMessage("重试"),
     "root": MessageLookupByLibrary.simpleMessage("Root"),
+    "rootMode": MessageLookupByLibrary.simpleMessage("Root 模式"),
+    "rootModeDesc": MessageLookupByLibrary.simpleMessage(
+      "Root 模式用 root 把流量导入 TUN，不经过系统 VPN：没有钥匙图标，不占用 VPN 位置，其他 VPN 应用照常使用。系统代理和允许绕过在此模式下无效，按进程名的规则可能无法匹配。",
+    ),
+    "rootWifiDesc": MessageLookupByLibrary.simpleMessage(
+      "已开启 Root 模式：通过 root 读取 Wi-Fi 名称，无需定位权限。连接被排除的 SSID 时停止服务，离开后自动启动，FlClash 关闭后也有效。",
+    ),
     "routeAddress": MessageLookupByLibrary.simpleMessage("路由地址"),
     "routeExcludeAddress": MessageLookupByLibrary.simpleMessage("排除路由地址"),
     "routingMark": MessageLookupByLibrary.simpleMessage("路由标记"),

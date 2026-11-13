@@ -208,6 +208,7 @@ SharedState sharedState(Ref ref) {
         onlyStatisticsProxy: state.onlyStatisticsProxy,
         showStopAction: state.showNotificationStopAction,
         checkCertificate: state.checkCertificate,
+        bootStart: state.bootStart,
       ),
     ),
   );
@@ -227,6 +228,8 @@ SharedState sharedState(Ref ref) {
       options: ref.watch(coreOptionsProvider),
     ),
     vpnOptions: ref.watch(vpnOptionsProvider).value,
+    excludeSSIDs: ref.watch(excludeSSIDsProvider),
+    bootStart: appSetting.bootStart,
   );
 }
 
@@ -281,6 +284,7 @@ Future<VpnOptions> vpnOptions(Ref ref) async {
     routeAddress: await routeAddress,
     mtu: tun.mtu,
     congestionController: tun.congestionController,
+    root: vpnSetting.root,
   );
 }
 

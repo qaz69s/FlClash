@@ -1,5 +1,6 @@
 package com.follow.clash
 
+import com.follow.clash.common.GlobalState
 import com.follow.clash.models.SharedState
 import io.flutter.embedding.engine.FlutterEngine
 import kotlinx.coroutines.Deferred
@@ -32,7 +33,10 @@ object ServiceState {
 
     fun requestStop(): Deferred<Boolean> = machine.requestStop()
 
-    fun syncSharedState(state: SharedState) = machine.syncSharedState(state)
+    fun syncSharedState(state: SharedState) {
+        machine.syncSharedState(state)
+        RootAutomation.sync(GlobalState.application, state)
+    }
 
     internal fun captureRequestToken(): RunRequest = machine.captureRequestToken()
 
