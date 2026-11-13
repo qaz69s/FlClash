@@ -36,6 +36,7 @@ class RootWifiWatch : Service() {
     private var nullRetries = 0
     private var leaveAt = 0L
     private var bootStart = false
+    private var reviveStart = false
     private val check = Runnable { evaluate() }
 
     private val callback = object : ConnectivityManager.NetworkCallback() {
@@ -92,6 +93,9 @@ class RootWifiWatch : Service() {
         if (intent?.getBooleanExtra(EXTRA_BOOT, false) == true) {
             bootStart = true
         }
+        if (intent?.getBooleanExtra(EXTRA_REVIVE, false) == true) {
+            reviveStart = true
+        }
         schedule(200)
         return START_STICKY
     }
@@ -117,6 +121,25 @@ class RootWifiWatch : Service() {
         val current = if (home) HOME else AWAY
         val prefs = getSharedPreferences(PREFS, MODE_PRIVATE)
         val last = prefs.getString(KEY_LAST, null)
+        if (reviveStart) {
+            reviveStart = false
+            if (!home) {
+                // The proxy was up when the system killed the app: bring it back away from home.
+                leaveAt = 0
+                prefs.edit().putString(KEY_LAST, current).apply()
+                GlobalState.launch {
+                    try {
+                        if (!ServiceState.isRunRequested) {
+                            ServiceState.handleStartAction()
+                        }
+                    } catch (error: Exception) {
+                        GlobalState.log("Wi-Fi watcher restore failed: $error")
+                    }
+                }
+                GlobalState.log("Wi-Fi watcher: revived away from home, restoring the proxy")
+                return
+            }
+        }
         if (current == last) {
             leaveAt = 0
             return
@@ -208,11 +231,14 @@ class RootWifiWatch : Service() {
         private const val HOME = "home"
         private const val AWAY = "away"
         private const val EXTRA_BOOT = "boot"
+        private const val EXTRA_REVIVE = "revive"
         private const val CONNECT_DELAY = 400L
         private const val LEAVE_CONFIRM = 2000L
 
-        fun start(context: Context, atBoot: Boolean = false) {
-            val intent = Intent(context, RootWifiWatch::class.java).putExtra(EXTRA_BOOT, atBoot)
+        fun start(context: Context, atBoot: Boolean = false, revive: Boolean = false) {
+            val intent = Intent(context, RootWifiWatch::class.java)
+                .putExtra(EXTRA_BOOT, atBoot)
+                .putExtra(EXTRA_REVIVE, revive)
             try {
                 context.startForegroundService(intent)
             } catch (error: Exception) {
