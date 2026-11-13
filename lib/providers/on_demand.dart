@@ -41,9 +41,8 @@ class LocationPermissions extends _$LocationPermissions {
         state != WifiSsidPermission.permanentlyDenied) {
       state = permission;
     }
-    final rootMode = ref.read(
-      vpnSettingProvider.select((state) => state.enable && state.root),
-    );
+    final vpn = ref.read(vpnSettingProvider);
+    final rootMode = vpn.enable && vpn.root;
     if (ref.read(excludeSSIDsProvider).isEmpty || rootMode) {
       _autoRequested = false;
       return;
