@@ -20,7 +20,7 @@ android {
     sourceSets {
         // Unit tests live under android/tests/ instead of each module's src/test.
         getByName("test").java.setSrcDirs(listOf("../tests/service"))
-        getByName("main").jniLibs.srcDir(layout.buildDirectory.dir("rootHelper/jniLibs"))
+        getByName("main").jniLibs.srcDir(layout.buildDirectory.dir("rootHelper/jniLibs").get().asFile)
     }
 }
 
